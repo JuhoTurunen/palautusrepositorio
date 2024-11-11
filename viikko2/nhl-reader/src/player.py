@@ -4,6 +4,8 @@ class Player:
         self.team = data.get("team")
         self.goals = data.get("goals")
         self.assists = data.get("assists")
+        self.nationality = data.get("nationality")
+        self.points = self.goals + self.assists
 
     def __str__(self):
         a = (f"{self.name}{" " * max(28-len(self.name), 1)}{self.team}   " 
