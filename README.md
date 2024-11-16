@@ -1,4 +1,4 @@
 # ohtuvarasto palautus
 https://github.com/JuhoTurunen/ohtuvarasto
 
-https://github.com/JuhoTurunen/webcounter
+https://github.com/JuhoTurunen/flaskcounter
