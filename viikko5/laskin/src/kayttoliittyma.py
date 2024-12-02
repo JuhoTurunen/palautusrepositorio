@@ -13,11 +13,12 @@ class Kayttoliittyma:
     def __init__(self, sovelluslogiikka, root):
         self._sovelluslogiikka = sovelluslogiikka
         self._root = root
+        self.arvo_historia = []
         self._komennot = {
             Komento.SUMMA: Summa(sovelluslogiikka, self._lue_syote),
             Komento.EROTUS: Erotus(sovelluslogiikka, self._lue_syote),
             Komento.NOLLAUS: Nollaus(sovelluslogiikka),
-            Komento.KUMOA: Kumoa(sovelluslogiikka)
+            Komento.KUMOA: Kumoa(sovelluslogiikka, self.palaa_historiassa)
         }
 
     def kaynnista(self):
@@ -60,6 +61,11 @@ class Kayttoliittyma:
         self._nollaus_painike.grid(row=2, column=2)
         self._kumoa_painike.grid(row=2, column=3)
 
+    def palaa_historiassa(self):
+        if len(self.arvo_historia) > 1:
+            self.arvo_historia.pop()
+        return self.arvo_historia[-1]
+
     def _lue_syote(self):
         try:
             return int(self._syote_kentta.get())
@@ -67,33 +73,20 @@ class Kayttoliittyma:
             pass
     
     def _suorita_komento(self, komento):
+        self.arvo_historia.append(self._sovelluslogiikka.arvo())
         komento_olio = self._komennot[komento]
         komento_olio.suorita()
-        """ 
-        arvo = 0
-        try:
-            arvo = int(self._syote_kentta.get())
-        except Exception:
-            pass
-
-        if komento == Komento.SUMMA:
-            self._sovelluslogiikka.plus(arvo)
-        elif komento == Komento.EROTUS:
-            self._sovelluslogiikka.miinus(arvo)
-        elif komento == Komento.NOLLAUS:
-            self._sovelluslogiikka.nollaa()
-        elif komento == Komento.KUMOA:
-            pass
-        """
+        
         self._kumoa_painike["state"] = constants.NORMAL
 
-        if self._sovelluslogiikka.arvo() == 0:
+        uusi_arvo = self._sovelluslogiikka.arvo()
+        if uusi_arvo == 0:
             self._nollaus_painike["state"] = constants.DISABLED
         else:
             self._nollaus_painike["state"] = constants.NORMAL
 
         self._syote_kentta.delete(0, constants.END)
-        self._arvo_var.set(self._sovelluslogiikka.arvo())
+        self._arvo_var.set(uusi_arvo)
 class Summa:
     def __init__(self, logiikka, input):
         self.logiikka = logiikka
@@ -118,9 +111,10 @@ class Nollaus:
         self.logiikka.nollaa()
         
 class Kumoa:
-    def __init__(self, logiikka):
+    def __init__(self, logiikka, viime_arvo):
         self.logiikka = logiikka
-        self.input = input
+        self.viime_arvo = viime_arvo
 
     def suorita(self):
-        pass
+        self.logiikka.aseta_arvo(self.viime_arvo())
+        self.viime_arvo()
