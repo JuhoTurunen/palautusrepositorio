@@ -40,3 +40,4 @@ class Statistics:
         )
 
         return list(matching_players)
+ # type: ignore
